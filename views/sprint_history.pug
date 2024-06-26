@@ -1,0 +1,120 @@
+extends layout
+block scripts
+  script(src="https://cdn.jsdelivr.net/npm/chart.js")
+  script(src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels")
+  script(src='/javascripts/show_data.js')
+  script(src='/javascripts/web_sprint_history.js')
+
+block menu
+  include menu/menu
+
+block content
+  if typeof session.delete !== 'undefined'
+    if session.delete.status
+      .alert.alert-success(role="alert")#alert_delete #{session.delete.msg}
+    else
+      .alert.alert-danger(role="alert")#alert_delete #{session.delete.msg}
+    - delete session.delete
+    
+    script.
+      setTimeout(function() {
+        var myAlert = document.getElementById('alert_delete');
+        var alert = new bootstrap.Alert(myAlert);
+        alert.close();
+      }, 5000);
+
+  .row
+    .col.pt-2
+      table.table.table-striped
+        thead
+          tr
+            th(scope="col") Sprint
+            th(scope="col") Start date
+            th(scope="col") End date
+            th(scope="col") Report date
+            th(scope="col") Actions
+        tbody 
+          each line in json_response
+            tr
+              td= line.sprint
+              td= line.start_date
+              td= line.end_date
+              td= line.created_at
+              td
+                i.me-4.fa-regular.fa-folder-open(onclick = "open_sprint('" + line.id + "', '" + line.sprint + "')")
+                i.me-4.fa-regular.fa-file-pdf(onclick = "donwload_sprint('" + line.id + "')")
+                if typeof session.token !== 'undefined'
+                  i.fa-regular.fa-trash-can(onclick = "delete_sprint('" + line.id + "', '" + line.sprint + "')")
+  
+  .modal.fade(data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modal-title" aria-hidden="true")#static-modal
+    .modal-dialog.modal-fullscreen
+      .modal-content
+        .modal-header.d-flex.justify-content-between.bd-highlight
+          .modal-title.bd-highlight#modal-title
+          .bd-highlight          
+            i.fa-solid.fa-file-pdf.fa-xl#pdf-modal
+          .bd-highlight
+            button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+        .modal-body
+          .container-fluid
+            .row
+              .accordion
+                .accordion-item
+                  h2.accordion-header#header-histories
+                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#panel-histories" aria-expanded="true" aria-controls="panel-histories") New functionalities
+                  .accordion-collapse.collapse.show(aria-labelledby="header-histories")#panel-histories
+                    .accordion-body
+                      .container-fluid#histories-content
+            .row
+              .accordion
+                .accordion-item
+                  h2.accordion-header#header-bugs
+                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#panel-bugs" aria-expanded="false" aria-controls="panel-bugs") Solved issues
+                  .accordion-collapse.collapse(aria-labelledby="header-bugs")#panel-bugs
+                    .accordion-body
+                      .container-fluid#bugs-content
+
+            .row
+              .accordion
+                .accordion-item
+                  h2.accordion-header#header-internal-task
+                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#panel-internal-task" aria-expanded="false" aria-controls="panel-internal-task") Internal Tasks
+                  .accordion-collapse.collapse(aria-labelledby="header-internal-task")#panel-internal-task
+                    .accordion-body
+                      .container-fluid#internal-task-content
+            
+            .row
+              .accordion
+                .accordion-item
+                  h2.accordion-header#header-charts
+                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#panel-charts" aria-expanded="false" aria-controls="panel-charts") Sprint metrics
+                  .accordion-collapse.collapse(aria-labelledby="header-charts")#panel-charts
+                    .accordion-body
+                      .container-fluid#charts-content
+            .row
+              .accordion
+                .accordion-item
+                  h2.accordion-header#header-components
+                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#panel-components" aria-expanded="false" aria-controls="panel-components") Components review
+                  .accordion-collapse.collapse(aria-labelledby="header-components")#panel-components
+                    .accordion-body
+                      .container-fluid#components-content
+            
+            .row
+              .accordion
+                .accordion-item
+                  h2.accordion-header#header-documents-review
+                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#panel-documents-review" aria-expanded="false" aria-controls="panel-documents-review") Documents review
+                  .accordion-collapse.collapse(aria-labelledby="header-documents-review")#panel-documents-review
+                    .accordion-body
+                      .container-fluid#documents-review-content
+            
+            .row
+              .accordion
+                .accordion-item
+                  h2.accordion-header#header-comments
+                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#panel-comments" aria-expanded="false" aria-controls="panel-commens") Comments
+                  .accordion-collapse.collapse(aria-labelledby="header-comments")#panel-comments
+                    .accordion-body
+                      .container-fluid.g-0#comments-content
+

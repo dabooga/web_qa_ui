@@ -1,0 +1,15 @@
+.row.justify-content-between.my-1(style="height: 2.5em")
+    .col
+        ul.list-inline
+            li.list-inline-item
+                a(href="/" style= "text-decoration: none;margin-right: 0.25px;") Home
+            if typeof session !== 'undefined' && typeof session.title !== 'undefined'
+                each item in session.title
+                    li.list-inline-item
+                        p /
+                    li.list-inline-item
+                        if item.url !== ""
+                            a(href=item.url style= "text-decoration: none;margin-right: 0.25px;")  #{item.section}
+                        else 
+                            p #{item.section}
+    

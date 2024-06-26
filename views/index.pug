@@ -1,0 +1,24 @@
+extends layout
+
+block content
+  .row.justify-content-center.align-items-center
+    .col.text-center
+      h1(style="color:#033076") QA Website
+      h4(style="color:#7a7a7a") Welcome to the QA portal, where all the information related to the quality and evolution of the components will be published.
+  .row.justify-content-center.align-items-center(style="margin-top:12em;")
+    .col.text-center
+        a.me-2.d-inline.btn-outline-index.border.border-2(role="button" href="/historic" type="button")
+          i.fa-solid.fa-file-circle-check.fa-2xl.mb-3.pt-3
+          h4 QA Sprints History
+          p(style="color:#0c59cf") Historical status of all sprints
+
+        a.mx-2.d-inline.btn-outline-index.border.border-2(role="button" href="/acceptance_results" type="button")
+          i.fa-solid.fa-list-check.fa-2xl.mb-3.pt-3
+          h4 QA Acceptance Results
+          p(style="color:#0c59cf") Acceptance results of all sprints
+
+        a.ms-2.btn-outline-index.border.border-2(role="button" href="/sprint" type="button")
+          i.fa-solid.fa-square-poll-vertical.fa-2xl.mb-3.pt-3
+          h4 Sprint Closing
+          p(style="color:#0c59cf") Sprint closure generation
+

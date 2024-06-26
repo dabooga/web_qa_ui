@@ -1,0 +1,38 @@
+body {
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+html, body {
+  height: 100%;
+}
+a {
+  color: #00B7FF;
+}
+
+.btn-outline-index {
+  color: #010101;
+  border-color: #808c99;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: center;
+  text-decoration: none;
+  vertical-align: middle;
+  user-select: none;
+  background-color: transparent;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  border-radius: 0.25rem;
+  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+.btn-outline-index:hover, .btn-outline-index:focus, .btn-outline-index:active, .btn-outline-index.active {
+  color: #fff;
+  background-color: #adb5bd;
+  border-color: #e3e6e8; /*set the color you want here*/
+}
+
+.btn-outline-index i {
+  color: #0844a4;
+}
+
+.btn-outline-index:hover i, .btn-outline-index:focus i, .btn-outline-index:active i, .btn-outline-index.active i {
+  color: #fff; 
+}

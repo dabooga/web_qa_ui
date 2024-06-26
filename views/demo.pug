@@ -1,0 +1,76 @@
+extends layout
+block scripts
+  script(src="https://cdn.jsdelivr.net/npm/chart.js")
+  script(src='/javascripts/show_data.js')
+  script(src='/javascripts/demo.js')
+
+block content
+  .container-fluid
+    .row.sticky-top.bg-secondary.bg-gradient
+      .col-sm-8 
+        .input-group.mb-3
+          .input-group-prepend
+            label.input-group-text(for="option-sprint") Sprint
+          select#option-sprint
+            option("selected" value=0) Choose...
+            each sprint in jsonSprints
+              option(value=sprint.id) #{sprint.name}
+      .col-sm-2
+        button.btn.btn-info(hidden)#export-pdf Generate Report
+      .col-sm-2
+        button.btn.btn-info(hidden)#close-sprint Close Sprint
+    .row.mt-2
+      .container-fluid
+            .row
+              .accordion
+                .accordion-item
+                  h2.accordion-header#header-histories
+                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#panel-histories" aria-expanded="true" aria-controls="panel-histories") New functionalities
+                  .accordion-collapse.collapse(aria-labelledby="header-histories")#panel-histories
+                    .accordion-body
+                      .container-fluid#histories-content
+            .row
+              .accordion
+                .accordion-item
+                  h2.accordion-header#header-bugs
+                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#panel-bugs" aria-expanded="false" aria-controls="panel-bugs") Solved issues
+                  .accordion-collapse.collapse(aria-labelledby="header-bugs")#panel-bugs
+                    .accordion-body
+                      .container-fluid#bugs-content
+            
+            .row
+              .accordion
+                .accordion-item
+                  h2.accordion-header#header-internal-task
+                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#panel-internal-task" aria-expanded="false" aria-controls="panel-internal-task") Internal Tasks
+                  .accordion-collapse.collapse(aria-labelledby="header-internal-task")#panel-internal-task
+                    .accordion-body
+                      .container-fluid#internal-task-content
+            
+            .row
+              .accordion
+                .accordion-item
+                  h2.accordion-header#header-charts
+                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#panel-charts" aria-expanded="false" aria-controls="panel-charts") Charts
+                  .accordion-collapse.collapse(aria-labelledby="header-charts")#panel-charts
+                    .accordion-body
+                      .container-fluid#charts-content
+  
+  .modal.fade(data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modal-title" aria-hidden="true")#static-modal
+    .modal-dialog
+      .modal-content
+        .modal-header
+          .modal-title.bd-highlight#modal-title Close Sprint
+        .modal-body
+          .container-fluid#m-body-conent
+            .row
+              .form-group
+                label(for="jira_ticket") Jira ticket
+                input.form-control(type="text" placeholder="Enter Jira key to upload report")#jira-ticket
+            .row
+              .form-group
+                label(for="sprint-comments") Comments
+                textarea.form-control(rows= "3")#sprint-comments
+        .modal-footer
+          button.btn.btn-secondary(type="button" data-dismiss="modal")#modal-close Close
+          button.btn.btn-primary(type="button" data-dismiss="modal")#modal-save Save changes
