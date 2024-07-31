@@ -95,7 +95,7 @@ async function generate_table(title, data, type = "") {
   let table = null;
   try {
     const rojo = ['story rejected', 'qa failed', 'qa rejected', 'prod rejected', 'discarded']
-    const verde = ['qa verification success', 'done', 'qa verified', 'discarded', 'in production', 'deploy release pre', 'pre deployment']
+    const verde = ['qa verification success', 'done', 'qa verified', 'discarded', 'regresion', 'to production', 'in production']
     const azul = ['in progress', 'qa testing story', 'qa validation']
 
     const o_values = {
@@ -319,7 +319,8 @@ async function pdf_generator(jsonData, historic = true) {
     doc = null;
     doc = new PDFDocument({ size: 'A4' });
 
-    const team_order = ['Commons', 'Team_Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith', 'PE'];
+    //const team_order = ['Commons', 'Team_Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith', 'PE'];
+    const team_order = ['nebulaSUITE', 'nebulaUSER', 'nebulaID', 'nebulaCERT', 'nebulaSIGN', 'not_defined'];
 
     doc.fontSize(16).font('Times-Roman').text(jsonData.sprint, { align: 'center' });
     doc.moveDown(2)
@@ -418,24 +419,26 @@ async function pdf_generator(jsonData, historic = true) {
       doc.fontSize(16).font('Times-Roman').text('Sprint bug summary', 60);
       await generate_basic_chart("Sprint bug summary", jsonData.g_bug_type, 450, 250)
       doc.moveDown(2)
-      doc.fontSize(16).font('Times-Roman').text('Bugs by component', 60);
-      await generate_basic_chart("Bugs by component", jsonData.g_bug_project, 450, 250)
+      doc.fontSize(16).font('Times-Roman').text('Bugs by product', 60);
+      await generate_basic_chart("Bugs by product", jsonData.g_bug_project, 450, 250)
 
       //Avanzadas
       doc.addPage()
-      doc.fontSize(16).font('Times-Roman').text('Bugs tipology by component', 60);
-      await generate_advance_chart("Bugs tipology by component", jsonData.g_bug_typology_byComponent, 450, 250)
+      doc.fontSize(16).font('Times-Roman').text('Bugs tipology by product', 60);
+      await generate_advance_chart("Bugs tipology by product", jsonData.g_bug_typology_byComponent, 450, 250)
 
       //Avanzadas
       doc.moveDown(2)
-      doc.fontSize(16).font('Times-Roman').text('Bugs resolution by component', 60);
-      await generate_advance_chart("Bugs resolution by component", jsonData.g_bug_pro_status, 450, 250)
+      doc.fontSize(16).font('Times-Roman').text('Bugs resolution by product', 60);
+      await generate_advance_chart("Bugs resolution by product", jsonData.g_bug_pro_status, 450, 250)
 
       doc.addPage()
-      doc.fontSize(16).font('Times-Roman').text('Bug cause by FactoryTeam', 60);
+      doc.fontSize(16).font('Times-Roman').text('Bug cause by Producto', 60);
       bg_char = ['#4837A9', '#A93745', '#A93785', '#3799A9', '#45A937', '#A6A937', '#434DC4']
-      ordered_graph_labels = ['Commons', 'Team_Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith', 'not_assigned'];
-      await generate_advance_chart("Bug cause by FactoryTeam", jsonData.g_bug_team_cause, 450, 250, ordered_graph_labels, bg_char)
+      //ordered_graph_labels = ['Commons', 'Team_Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith', 'not_assigned'];
+      ordered_graph_labels = ['nebulaSUITE', 'nebulaUSER', 'nebulaID', 'nebulaCERT', 'nebulaSIGN', 'not_defined'];
+      await generate_advance_chart("Bug cause by Producto", jsonData.g_bug_team_cause, 450, 250, ordered_graph_labels, bg_char)
+      await generate_advance_chart("Bug cause by Producto", jsonData.g_bug_team_cause, 450, 250, ordered_graph_labels, bg_char)
 
       //Counters
       if ("counters" in jsonData) {

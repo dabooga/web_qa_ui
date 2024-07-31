@@ -5,6 +5,8 @@ const loadData = async (opt, name) => {
         const card_internal_tasks = document.getElementById('internal-task-content');
         const card_charts = document.getElementById('charts-content');
         const card_components = document.getElementById('components-content');
+        const card_release_notes = document.getElementById('release-note-content');
+        const boton_panel_release_note = document.getElementById('boton-panel-release-note');
         const card_documents = document.getElementById('documents-review-content');
         const card_comments = document.getElementById('comments-content');
         const modal_title = document.getElementById('modal-title');
@@ -33,6 +35,11 @@ const loadData = async (opt, name) => {
         //Components
         card = manageComponents(data.qa_sprint_story.components);
         card_components.appendChild(card);
+
+        //Release Notes
+        card = manageReleaseNotes(data.qa_acceptance_results.release_notes);
+        boton_panel_release_note.textContent = data.qa_acceptance_results.release_notes.name;
+        card_release_notes.appendChild(card);
 
         //Documentation
         card = manageDocumentation(data.qa_sprint_story.documentation);

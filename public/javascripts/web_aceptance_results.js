@@ -4,6 +4,8 @@ const loadData = async (opt, name) => {
         const card_bugs = document.getElementById('bugs-content');
         const card_internal_tasks = document.getElementById('internal-task-content');
         const card_components = document.getElementById('components-content');
+        const card_release_notes = document.getElementById('release-note-content');
+        const boton_panel_release_note = document.getElementById('boton-panel-release-note');
         const card_documents = document.getElementById('documents-review-content');
         const card_comments = document.getElementById('comments-content');
         const card_charts = document.getElementById('charts-content');
@@ -12,6 +14,7 @@ const loadData = async (opt, name) => {
         modal_title.textContent = name;
         const response = await fetch(`/acceptance_results/id/${opt}`);
         const data = await response.json();
+
         var card = null;
         card_stories.innerHTML = '';
         card_bugs.innerHTML = '';
@@ -33,6 +36,11 @@ const loadData = async (opt, name) => {
         //Components
         card = manageComponents(data.qa_acceptance_results.components);
         card_components.appendChild(card);
+
+        //Release Notes
+        card = manageReleaseNotes(data.qa_acceptance_results.release_notes);
+        boton_panel_release_note.textContent = data.qa_acceptance_results.release_notes.name;
+        card_release_notes.appendChild(card);
 
         //Documents
         card = manageDocumentation(data.qa_acceptance_results.documentation);
