@@ -501,7 +501,7 @@ const manageCharts = (data) => {
         content_main.appendChild(card_bug_project);
 
         //Bugs tipology by component
-        const chart_bug_typologie = createAdvanceChart(data.g_bug_typology_byComponent, "Bugs tipology by product", [], ['#434DC4', '#6973E8']);
+        const chart_bug_typologie = createAdvanceChart(data.g_bug_typology_byComponent, "Bugs tipology by product", [], ['#434DC4', '#6973E8', '#A6A937', '#3fa937']);
         content_main.appendChild(chart_bug_typologie);
 
         //Chart Bugs resolution by component

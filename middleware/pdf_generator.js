@@ -48,12 +48,11 @@ async function generate_table(title, data, type = "") {
     size_columns['type'] = { 'size': 40, 'align': 'left', 'headerAlign ': 'center' }
     size_columns['notes'] = { 'size': 60, 'align': 'left', 'headerAlign ': "right" }
   } else if (type == 'components') {
-    order = ['key', 'summary', 'hash', 'status']
+    order = ['key', 'summary', 'hash']
     size_columns = {
       'key': { 'size': 60, 'align': 'left', 'headerAlign': 'center' },
-      'summary': { 'size': 100, 'align': 'left', 'headerAlign': 'center' },
-      'hash': { 'size': 260, 'align': 'left', 'headerAlign': 'center' },
-      'status': { 'size': 60, 'align': 'left', 'headerAlign': 'center' }
+      'summary': { 'size': 160, 'align': 'left', 'headerAlign': 'center' },
+      'hash': { 'size': 260, 'align': 'left', 'headerAlign': 'center' }
     };
   } else if (type == 'documents') {
     order = ['user_guide', 'version', 'hash', 'status']
@@ -234,7 +233,7 @@ async function generate_basic_chart(title, data, width, height, backgroundColor 
   doc.image(buffer, 60, doc.y, { align: 'center', width, height });
 }
 
-async function generate_advance_chart(title, data, width, height, ordered_grafic_columns = [], backgroundColor = ['#434DC4', '#6973E8', '#A6A937']) {
+async function generate_advance_chart(title, data, width, height, ordered_grafic_columns = [], backgroundColor = ['#434DC4', '#6973E8', '#A6A937', '#3fa937']) {
 
   title = capitalizeWords(title);
   const labels = Object.keys(data);
@@ -357,7 +356,6 @@ async function pdf_generator(jsonData, historic = true) {
     }
 
     //Internal Tasks
-    if (historic) {
       if (need_new_page) doc.addPage();
       doc.fontSize(16).font('Times-Roman').text('Internal Tasks', 40, doc.y);
       doc.moveDown();
@@ -369,21 +367,14 @@ async function pdf_generator(jsonData, historic = true) {
           }
         }
       }
-    }
 
     //Components review
     if (need_new_page) doc.addPage();
     doc.fontSize(16).font('Times-Roman').text('Components review', 40);
     doc.moveDown();
-    for (let item of team_order) {
-      if (Object.keys(data_to_pdf.components).includes(item)) {
-        if (data_to_pdf.components[item].length !== 0) {
-          await generate_table(item, data_to_pdf.components[item], 'components')
-          need_new_page = checkAddNewPage()
-        }
-      }
-    }
-
+    await generate_table("", data_to_pdf.components, 'components')
+    need_new_page = checkAddNewPage()
+    /*
     try {
       //Documentation
       if (need_new_page) doc.addPage();
@@ -407,7 +398,7 @@ async function pdf_generator(jsonData, historic = true) {
       console.error("Error generating Documentation block");
       doc.moveDown();
     }
-
+    */
     //Charts
     //if (historic) {
     if (true) {
@@ -438,7 +429,6 @@ async function pdf_generator(jsonData, historic = true) {
       //ordered_graph_labels = ['Commons', 'Team_Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith', 'not_assigned'];
       ordered_graph_labels = ['nebulaSUITE', 'nebulaUSER', 'nebulaID', 'nebulaCERT', 'nebulaSIGN', 'not_defined'];
       await generate_advance_chart("Bug cause by Producto", jsonData.g_bug_team_cause, 450, 250, ordered_graph_labels, bg_char)
-      await generate_advance_chart("Bug cause by Producto", jsonData.g_bug_team_cause, 450, 250, ordered_graph_labels, bg_char)
 
       //Counters
       if ("counters" in jsonData) {
@@ -452,9 +442,9 @@ async function pdf_generator(jsonData, historic = true) {
       }
     }
 
-
+    need_new_page = checkAddNewPage()
     //Comentarios
-    if (need_new_page) doc.addPage();
+    if (!need_new_page) doc.addPage();
     doc.fontSize(16).font('Times-Roman').text('Comments', 60);
     doc.moveDown(2)
     doc.fontSize(13).font('Times-Roman').text(jsonData.comments)

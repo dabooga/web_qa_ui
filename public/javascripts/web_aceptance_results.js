@@ -39,12 +39,12 @@ const loadData = async (opt, name) => {
 
         //Release Notes
         card = manageReleaseNotes(data.qa_acceptance_results.release_notes);
-        boton_panel_release_note.textContent = data.qa_acceptance_results.release_notes.name;
+        //boton_panel_release_note.textContent = data.qa_acceptance_results.release_notes.name;
         card_release_notes.appendChild(card);
 
         //Documents
-        card = manageDocumentation(data.qa_acceptance_results.documentation);
-        card_documents.appendChild(card);
+        //card = manageDocumentation(data.qa_acceptance_results.documentation);
+        //card_documents.appendChild(card);
 
         // Charts
         card = manageCharts(data);
