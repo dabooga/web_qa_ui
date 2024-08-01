@@ -11,7 +11,7 @@ function capitalizeWords(inputString) {
 function apply_order(dataset) {
     let lines = Object({ 'verde': [], 'rojo': [], 'azul': [], 'resto': [] });
     rojo = ['story rejected', 'qa failed', 'qa rejected', 'prod rejected', 'discarded']
-    verde = ['qa verification success', 'done', 'qa verified', 'discarded', 'regresion', 'to production', 'in production']
+    verde = ['qa verification success', 'done', 'qa verified', 'discarded', 'regresion', 'to production', 'in production', 'bug resolved']
     azul = ['in progress', 'qa testing story', 'qa validation']
     dataset.forEach((element) => {
         if (rojo.includes(element.status.toLowerCase())) {
@@ -75,7 +75,7 @@ const create_table_row = (data, order, color = "") => {
             status.style.background = color;
             status.textContent = data[key];
             cell.appendChild(status);
-        } else if (key == "key") { 
+        } else if (key == "key") {
             const key_link = document.createElement('a');
             key_link.classList.add('link-primary', 'link-offset-2', 'link-underline-opacity-25', 'link-underline-opacity-100-hover');
             key_link.href = 'https://vintegris.atlassian.net/browse/' + data[key];
@@ -366,20 +366,22 @@ const manageInternalTask = (issues) => {
 
 const manageComponents = (issues) => {
     const header_order = ['key', 'summary', 'hash'];
+    console.log(issues)
     try {
         const content_main = document.createElement('div');
         content_main.classList.add("row");
+        if (!issues || Object.keys(issues).length > 0) {
+            const table = createTable();
+            const row = document.createElement('div');
+            row.appendChild(table);
+            table.querySelector('thead').appendChild(create_table_header(header_order));
+            issues.forEach(element => {
+                table.querySelector('tbody').appendChild(create_table_row(element, header_order));
+            });
 
-        const table = createTable();
-        const row = document.createElement('div');
-        row.appendChild(table);
-        table.querySelector('thead').appendChild(create_table_header(header_order));
-        issues.forEach(element => {
-            table.querySelector('tbody').appendChild(create_table_row(element, header_order));
-        });
+            content_main.appendChild(row);
 
-        content_main.appendChild(row);
-
+        }
         return content_main;
     } catch (error) {
         console.error('Error al cargar datos:', error);
@@ -395,11 +397,11 @@ const manageReleaseNotes = (issues) => {
         for (const key in issues.issues) {
             if (issues.issues.hasOwnProperty(key)) {
                 let array_issues = issues.issues[key];
-                let tabla = createTable(); 
-                let row = create_content_row(key.replace('___', ' '), tabla); 
+                let tabla = createTable();
+                let row = create_content_row(key.replace('___', ' '), tabla);
                 array_issues.forEach(item => {
                     console.log(item);
-                    tabla.querySelector('tbody').appendChild(create_table_row(item, header_order)); 
+                    tabla.querySelector('tbody').appendChild(create_table_row(item, header_order));
                     content_main.appendChild(row);
                 });
             }
@@ -414,7 +416,7 @@ const manageReleaseNotes = (issues) => {
 const manageDocumentation = (issues) => {
     const header_order = ['user_guide', 'version', 'hash', 'status'];
     rojo = ['story rejected', 'qa failed', 'qa rejected', 'prod rejected', 'discarded']
-    verde = ['qa verification success', 'done', 'qa verified', 'discarded', 'regresion', 'to production', 'in production']
+    verde = ['qa verification success', 'done', 'qa verified', 'discarded', 'regresion', 'to production', 'in production', 'bug resolved']
     azul = ['in progress', 'qa testing story', 'qa validation']
     if (issues.length == 0) return null;
 
@@ -460,6 +462,10 @@ const manageBugs = (bugs) => {
     try {
         const content_main = document.createElement('div');
         content_main.classList.add("row");
+
+        if (!bugs || Object.keys(bugs).length === 0) {
+            return content_main;
+        }
 
         for (const team_key of team_order) {
             if (Object.keys(bugs).includes(team_key)) {

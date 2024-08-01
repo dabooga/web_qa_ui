@@ -77,6 +77,15 @@ block content
             .row
               .accordion
                 .accordion-item
+                  h2.accordion-header#header-qabugs
+                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#panel-qabugs" aria-expanded="false" aria-controls="panel-qabugs") QA reported bugs
+                  .accordion-collapse.collapse(aria-labelledby="header-qabugs")#panel-qabugs
+                    .accordion-body
+                      .container-fluid#qabugs-content
+
+            .row
+              .accordion
+                .accordion-item
                   h2.accordion-header#header-internal-task
                     button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#panel-internal-task" aria-expanded="false" aria-controls="panel-internal-task") Internal Tasks
                   .accordion-collapse.collapse(aria-labelledby="header-internal-task")#panel-internal-task

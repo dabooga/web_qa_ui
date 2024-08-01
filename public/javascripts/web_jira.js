@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const card_release_notes = document.getElementById('release-note-content');
     const boton_panel_release_note = document.getElementById('boton-panel-release-note');
     const card_documents = document.getElementById('documents-review-content');
+    const card_qabugs = document.getElementById('qabugs-content');
     const button_export = document.getElementById('export-pdf');
     const button_close = document.getElementById('close-sprint');
 
@@ -34,13 +35,17 @@ document.addEventListener('DOMContentLoaded', () => {
         card = manageBugs(data.qa_sprint_story.bugs);
         card_bugs.appendChild(card);
 
+        // QA Bugs
+        card = manageBugs(data.qa_sprint_story.bugs_qa);
+        card_qabugs.appendChild(card);
+
         //Internal Tasks
         card = manageInternalTask(data.qa_sprint_story.internal_tasks);
         card_internal_tasks.appendChild(card);
 
         //Components
         card = manageComponents(data.qa_sprint_story.components);
-        //card_components.appendChild(card);
+        card_components.appendChild(card);
 
         //Release Notes
         card = manageReleaseNotes(data.qa_acceptance_results.release_notes);

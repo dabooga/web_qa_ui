@@ -8,6 +8,7 @@ const loadData = async (opt, name) => {
         const card_release_notes = document.getElementById('release-note-content');
         const boton_panel_release_note = document.getElementById('boton-panel-release-note');
         const card_documents = document.getElementById('documents-review-content');
+        const card_qabugs = document.getElementById('qabugs-content');
         const card_comments = document.getElementById('comments-content');
         const modal_title = document.getElementById('modal-title');
 
@@ -27,6 +28,10 @@ const loadData = async (opt, name) => {
         // Bugs
         card = manageBugs(data.qa_sprint_story.bugs);
         card_bugs.appendChild(card);
+
+        // QA Bugs
+        card = manageBugs(data.qa_sprint_story.bugs_qa);
+        card_qabugs.appendChild(card);
 
         //Internal Tasks
         card = manageInternalTask(data.qa_sprint_story.internal_tasks);

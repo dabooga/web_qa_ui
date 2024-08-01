@@ -26,36 +26,43 @@ function capitalizeWords(inputString) {
     .join(' ');
 }
 
-async function generate_table(title, data, type = "") {
-  title = title != "" ? capitalizeWords(title) : "";
+async function generate_table(title, data = [], type = "") {
+  title = title !== "" ? capitalizeWords(title) : "";
+
+  // Ensure data is an array
+  if (!Array.isArray(data)) {
+    console.error("Expected 'data' to be an array, but got:", data);
+    data = []; // Fallback to an empty array
+  }
+
   let order = ['key', 'summary', 'components', 'status'];
-  size_columns = { //480
+  let size_columns = { //480
     'key': { 'size': 60, 'align': 'left', 'headerAlign': 'center' },
     'summary': { 'size': 240, 'align': 'left', 'headerAlign': 'center' },
     'components': { 'size': 120, 'align': 'left', 'headerAlign': 'center' },
     'status': { 'size': 60, 'align': 'left', 'headerAlign': 'center' }
   };
+
   if (type == 'bug') {
     order = ['key', 'summary', 'components', 'status', 'notes'];
-    size_columns['components']['size'] -= 30
-    size_columns['summary']['size'] -= 30
-    size_columns['notes'] = { 'size': 60, 'align': 'left', 'headerAlign ': "right" }
-
+    size_columns['components']['size'] -= 30;
+    size_columns['summary']['size'] -= 30;
+    size_columns['notes'] = { 'size': 60, 'align': 'left', 'headerAlign': "right" };
   } else if (type == 'internal') {
-    order = ['key', 'type', 'summary', 'components', 'status', 'notes']
-    size_columns['summary']['size'] -= 50
-    size_columns['components']['size'] -= 50
-    size_columns['type'] = { 'size': 40, 'align': 'left', 'headerAlign ': 'center' }
-    size_columns['notes'] = { 'size': 60, 'align': 'left', 'headerAlign ': "right" }
+    order = ['key', 'type', 'summary', 'components', 'status', 'notes'];
+    size_columns['summary']['size'] -= 50;
+    size_columns['components']['size'] -= 50;
+    size_columns['type'] = { 'size': 40, 'align': 'left', 'headerAlign': 'center' };
+    size_columns['notes'] = { 'size': 60, 'align': 'left', 'headerAlign': "right" };
   } else if (type == 'components') {
-    order = ['key', 'summary', 'hash']
+    order = ['key', 'summary', 'hash'];
     size_columns = {
       'key': { 'size': 60, 'align': 'left', 'headerAlign': 'center' },
       'summary': { 'size': 160, 'align': 'left', 'headerAlign': 'center' },
       'hash': { 'size': 260, 'align': 'left', 'headerAlign': 'center' }
     };
   } else if (type == 'documents') {
-    order = ['user_guide', 'version', 'hash', 'status']
+    order = ['user_guide', 'version', 'hash', 'status'];
     size_columns = {
       'user_guide': { 'size': 90, 'align': 'left', 'headerAlign': 'center' },
       'version': { 'size': 130, 'align': 'left', 'headerAlign': 'center' },
@@ -64,38 +71,37 @@ async function generate_table(title, data, type = "") {
     };
   }
 
-  data.sort((a, b) => {
-    return order.indexOf(a.key) - order.indexOf(b.key);
-  });
+  // Proceed only if data is an array
+  if (Array.isArray(data) && data.length > 0) {
+    data.sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key));
 
-  if (type != 'components') { // Pasar componentes a listado si los datos lo contiene
-    const dataConverted = data.map(item => {
-      let componentsAsString = item.components;
-      if (Array.isArray(item.components)) {
-        componentsAsString = item.components.join(', ');
-      }
-      return { ...item, components: componentsAsString };
-    });
-    data = Object.values(dataConverted)
-  } else {
-    data = Object.values(data)
+    if (type !== 'components') {
+      data = data.map(item => {
+        let componentsAsString = item.components;
+        if (Array.isArray(item.components)) {
+          componentsAsString = item.components.join(', ');
+        }
+        return { ...item, components: componentsAsString };
+      });
+    }
   }
 
   let headers = [];
-  for (h of order) {
+  for (const h of order) {
     let column = {
       label: capitalizeWords(h.toUpperCase()),
       headerAlign: size_columns[h]['headerAlign'],
       property: h,
       width: size_columns[h]['size']
-    }
-    headers.push(column)
+    };
+    headers.push(column);
   }
+
   let table = null;
   try {
-    const rojo = ['story rejected', 'qa failed', 'qa rejected', 'prod rejected', 'discarded']
-    const verde = ['qa verification success', 'done', 'qa verified', 'discarded', 'regresion', 'to production', 'in production']
-    const azul = ['in progress', 'qa testing story', 'qa validation']
+    const rojo = ['story rejected', 'qa failed', 'qa rejected', 'prod rejected', 'discarded'];
+    const verde = ['qa verification success', 'done', 'qa verified', 'discarded', 'regresion', 'to production', 'in production', 'bug resolved'];
+    const azul = ['in progress', 'qa testing story', 'qa validation'];
 
     const o_values = {
       verde: [],
@@ -104,7 +110,7 @@ async function generate_table(title, data, type = "") {
       resto: [],
     };
 
-    Object.values(data).forEach(element => {
+    data.forEach(element => {
       const status = element.hasOwnProperty('status') ? element.status.toLowerCase() : "";
       if (rojo.includes(status)) {
         o_values.rojo.push(element);
@@ -127,13 +133,13 @@ async function generate_table(title, data, type = "") {
       padding: 2,
       width: doc.page.width - 70,
       prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
-        rectRow.width = 480
+        rectRow.width = 480;
         if (indexRow % 2 == 0) {
           doc.addBackground(rectRow, '#bfbfbf');
         }
 
         if (indexColumn == order.indexOf('status')) {
-          const row_status = row.status.toLowerCase()
+          const row_status = row.status.toLowerCase();
           if (rojo.includes(row_status)) {
             doc.addBackground(rectCell, "#ff0d00"); //rojo
           } else if (verde.includes(row_status)) {
@@ -147,13 +153,14 @@ async function generate_table(title, data, type = "") {
 
   } catch (e) {
     console.error("Generating Table");
-    console.error(table)
-    console.error(e)
+    console.error(table);
+    console.error(e);
   }
 }
 
+
 async function generate_basic_chart(title, data, width, height, backgroundColor = ['#434DC4']) {
-  
+
   let max_value = 0;
   const integerValues = Object.values(data).map(value => {
     const val = parseInt(value, 10);
@@ -168,10 +175,10 @@ async function generate_basic_chart(title, data, width, height, backgroundColor 
     value = value.replace('-_-', '#');
     return capitalizeWords(value);
   });
-  
+
 
   //const chart = new ChartJSNodeCanvas({ type: 'png', width: 800, height: 600 });
-  
+
   const chartConfig = {
     type: 'bar',
     data: {
@@ -226,7 +233,7 @@ async function generate_basic_chart(title, data, width, height, backgroundColor 
   const canvas = createCanvas(w, h)
   const ctx = canvas.getContext('2d')
   const chart = new Chart(ctx, chartConfig);
-  
+
   //const buffer = await chart.renderToBuffer(chartConfig);
   const buffer = chart.toBase64Image();
 
@@ -318,6 +325,8 @@ async function pdf_generator(jsonData, historic = true) {
     doc = null;
     doc = new PDFDocument({ size: 'A4' });
 
+    console.log(jsonData)
+
     //const team_order = ['Commons', 'Team_Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith', 'PE'];
     const team_order = ['nebulaSUITE', 'nebulaUSER', 'nebulaID', 'nebulaCERT', 'nebulaSIGN', 'not_defined'];
 
@@ -342,7 +351,7 @@ async function pdf_generator(jsonData, historic = true) {
       }
     }
 
-
+    //Bugs
     if (need_new_page) doc.addPage();
     doc.fontSize(16).font('Times-Roman').text('Solved issues', 40);
     doc.moveDown();
@@ -355,18 +364,31 @@ async function pdf_generator(jsonData, historic = true) {
       }
     }
 
-    //Internal Tasks
-      if (need_new_page) doc.addPage();
-      doc.fontSize(16).font('Times-Roman').text('Internal Tasks', 40, doc.y);
-      doc.moveDown();
-      for (let item of team_order) {
-        if (Object.keys(data_to_pdf.internal_tasks).includes(item)) {
-          if (data_to_pdf.internal_tasks[item].length !== 0) {
-            await generate_table(item, data_to_pdf.internal_tasks[item], 'internal')
-            need_new_page = checkAddNewPage()
-          }
+    //QA Bugs
+    if (need_new_page) doc.addPage();
+    doc.fontSize(16).font('Times-Roman').text('QA reported bugs', 40);
+    doc.moveDown();
+    for (let item of team_order) {
+      if (Object.keys(data_to_pdf.bugs_qa).includes(item)) {
+        if (data_to_pdf.bugs_qa[item].length !== 0) {
+          await generate_table(item, data_to_pdf.bugs_qa[item], 'bug')
+          need_new_page = checkAddNewPage()
         }
       }
+    }
+
+    //Internal Tasks
+    if (need_new_page) doc.addPage();
+    doc.fontSize(16).font('Times-Roman').text('Internal Tasks', 40, doc.y);
+    doc.moveDown();
+    for (let item of team_order) {
+      if (Object.keys(data_to_pdf.internal_tasks).includes(item)) {
+        if (data_to_pdf.internal_tasks[item].length !== 0) {
+          await generate_table(item, data_to_pdf.internal_tasks[item], 'internal')
+          need_new_page = checkAddNewPage()
+        }
+      }
+    }
 
     //Components review
     if (need_new_page) doc.addPage();
