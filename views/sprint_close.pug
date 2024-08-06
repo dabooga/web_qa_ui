@@ -40,16 +40,6 @@ block content
                   .accordion-collapse.collapse(aria-labelledby="header-bugs")#panel-bugs
                     .accordion-body
                       .container-fluid#bugs-content
-                    
-            .row
-              .accordion
-                .accordion-item
-                  h2.accordion-header#header-qabugs
-                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#panel-qabugs" aria-expanded="false" aria-controls="panel-qabugs") QA reported bugs
-                  .accordion-collapse.collapse(aria-labelledby="header-qabugs")#panel-qabugs
-                    .accordion-body
-                      .container-fluid#qabugs-content
-            
             .row
               .accordion
                 .accordion-item
@@ -58,7 +48,14 @@ block content
                   .accordion-collapse.collapse(aria-labelledby="header-internal-task")#panel-internal-task
                     .accordion-body
                       .container-fluid#internal-task-content
-
+            .row
+              .accordion
+                .accordion-item
+                  h2.accordion-header#header-qabugs
+                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#panel-qabugs" aria-expanded="false" aria-controls="panel-qabugs") QA reported bugs
+                  .accordion-collapse.collapse(aria-labelledby="header-qabugs")#panel-qabugs
+                    .accordion-body
+                      .container-fluid#qabugs-content
             .row
               .accordion
                 .accordion-item

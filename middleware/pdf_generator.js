@@ -364,19 +364,6 @@ async function pdf_generator(jsonData, historic = true) {
       }
     }
 
-    //QA Bugs
-    if (need_new_page) doc.addPage();
-    doc.fontSize(16).font('Times-Roman').text('QA reported bugs', 40);
-    doc.moveDown();
-    for (let item of team_order) {
-      if (Object.keys(data_to_pdf.bugs_qa).includes(item)) {
-        if (data_to_pdf.bugs_qa[item].length !== 0) {
-          await generate_table(item, data_to_pdf.bugs_qa[item], 'bug')
-          need_new_page = checkAddNewPage()
-        }
-      }
-    }
-
     //Internal Tasks
     if (need_new_page) doc.addPage();
     doc.fontSize(16).font('Times-Roman').text('Internal Tasks', 40, doc.y);
@@ -385,6 +372,19 @@ async function pdf_generator(jsonData, historic = true) {
       if (Object.keys(data_to_pdf.internal_tasks).includes(item)) {
         if (data_to_pdf.internal_tasks[item].length !== 0) {
           await generate_table(item, data_to_pdf.internal_tasks[item], 'internal')
+          need_new_page = checkAddNewPage()
+        }
+      }
+    }
+
+    //QA reported bugs
+    if (need_new_page) doc.addPage();
+    doc.fontSize(16).font('Times-Roman').text('QA reported bugs', 40);
+    doc.moveDown();
+    for (let item of team_order) {
+      if (Object.keys(data_to_pdf.bugs_qa).includes(item)) {
+        if (data_to_pdf.bugs_qa[item].length !== 0) {
+          await generate_table(item, data_to_pdf.bugs_qa[item], 'bug')
           need_new_page = checkAddNewPage()
         }
       }
