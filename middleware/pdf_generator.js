@@ -328,18 +328,18 @@ async function pdf_generator(jsonData, historic = true) {
     console.log(jsonData)
 
     //const team_order = ['Commons', 'Team_Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith', 'PE'];
-    const team_order = ['nebulaSUITE', 'nebulaUSER', 'nebulaID', 'nebulaCERT', 'nebulaSIGN', 'not_defined'];
+    const team_order = ['nebulaSUITE', 'nebulaUSER', 'nebulaID', 'nebulaCERT', 'nebulaSIGN', 'not_defined', 'Commons', 'Team_Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith', 'PE'];
 
-    doc.fontSize(16).font('Times-Roman').text(jsonData.sprint, { align: 'center' });
+    doc.fontSize(16).font('Helvetica').text(jsonData.sprint, { align: 'center' });
     doc.moveDown(2)
-    doc.fontSize(16).font('Times-Roman').text('Included in this Sprint', 40);
+    doc.fontSize(16).font('Helvetica').text('Included in this Sprint', 40);
     doc.moveDown(1)
-    doc.fontSize(14).font('Times-Roman').text('This Sprint incorporates the following new functionalities and solved issues', 60);
+    doc.fontSize(14).font('Helvetica').text('This Sprint incorporates the following new functionalities and solved issues', 60);
 
     const data_to_pdf = historic ? jsonData.qa_sprint_story : jsonData.qa_acceptance_results;
 
     doc.moveDown(2)
-    doc.fontSize(16).font('Times-Roman').text('New functionalities', 40);
+    doc.fontSize(16).font('Helvetica').text('New functionalities', 40);
     doc.moveDown();
     let need_new_page = false
     for (let item of team_order) {
@@ -353,7 +353,7 @@ async function pdf_generator(jsonData, historic = true) {
 
     //Bugs
     if (need_new_page) doc.addPage();
-    doc.fontSize(16).font('Times-Roman').text('Solved issues', 40);
+    doc.fontSize(16).font('Helvetica').text('Solved issues', 40);
     doc.moveDown();
     for (let item of team_order) {
       if (Object.keys(data_to_pdf.bugs).includes(item)) {
@@ -366,7 +366,7 @@ async function pdf_generator(jsonData, historic = true) {
 
     //Internal Tasks
     if (need_new_page) doc.addPage();
-    doc.fontSize(16).font('Times-Roman').text('Internal Tasks', 40, doc.y);
+    doc.fontSize(16).font('Helvetica').text('Internal Tasks', 40, doc.y);
     doc.moveDown();
     for (let item of team_order) {
       if (Object.keys(data_to_pdf.internal_tasks).includes(item)) {
@@ -378,29 +378,42 @@ async function pdf_generator(jsonData, historic = true) {
     }
 
     //QA reported bugs
-    if (need_new_page) doc.addPage();
-    doc.fontSize(16).font('Times-Roman').text('QA reported bugs', 40);
-    doc.moveDown();
-    for (let item of team_order) {
-      if (Object.keys(data_to_pdf.bugs_qa).includes(item)) {
-        if (data_to_pdf.bugs_qa[item].length !== 0) {
-          await generate_table(item, data_to_pdf.bugs_qa[item], 'bug')
-          need_new_page = checkAddNewPage()
+    if (Object.keys(data_to_pdf).includes('bugs_qa')) {
+      if (need_new_page) doc.addPage();
+      doc.fontSize(16).font('Helvetica').text('QA reported bugs', 40);
+      doc.moveDown();
+      for (let item of team_order) {
+        if (Object.keys(data_to_pdf.bugs_qa).includes(item)) {
+          if (data_to_pdf.bugs_qa[item].length !== 0) {
+            await generate_table(item, data_to_pdf.bugs_qa[item], 'bug')
+            need_new_page = checkAddNewPage()
+          }
         }
       }
     }
 
     //Components review
     if (need_new_page) doc.addPage();
-    doc.fontSize(16).font('Times-Roman').text('Components review', 40);
+    doc.fontSize(16).font('Helvetica').text('Components review', 40);
     doc.moveDown();
-    await generate_table("", data_to_pdf.components, 'components')
-    need_new_page = checkAddNewPage()
+    if (Array.isArray(data_to_pdf.components)) {
+      await generate_table("", data_to_pdf.components, 'components')
+      need_new_page = checkAddNewPage()
+    } else {
+      for (let equipo in data_to_pdf.components) {
+        if (data_to_pdf.components.hasOwnProperty(equipo)) {
+          doc.fontSize(14).font('Helvetica-BoldOblique').text(equipo, 40);
+          doc.moveDown(1);
+          await generate_table("", data_to_pdf.components[equipo], 'components')
+          need_new_page = checkAddNewPage()
+        }
+      }
+    }
     /*
     try {
       //Documentation
       if (need_new_page) doc.addPage();
-      doc.fontSize(16).font('Times-Roman').text('Documents review', 40);
+      doc.fontSize(16).font('Helvetica').text('Documents review', 40);
       doc.moveDown();
 
       for (let item of team_order) {
@@ -426,27 +439,27 @@ async function pdf_generator(jsonData, historic = true) {
     if (true) {
       // Graficas
       if (need_new_page) doc.addPage();
-      doc.fontSize(16).font('Times-Roman').text('Sprint metrics', 40);
+      doc.fontSize(16).font('Helvetica').text('Sprint metrics', 40);
       doc.moveDown(2)
       //Simples
-      doc.fontSize(16).font('Times-Roman').text('Sprint bug summary', 60);
+      doc.fontSize(16).font('Helvetica').text('Sprint bug summary', 60);
       await generate_basic_chart("Sprint bug summary", jsonData.g_bug_type, 450, 250)
       doc.moveDown(2)
-      doc.fontSize(16).font('Times-Roman').text('Bugs by product', 60);
+      doc.fontSize(16).font('Helvetica').text('Bugs by product', 60);
       await generate_basic_chart("Bugs by product", jsonData.g_bug_project, 450, 250)
 
       //Avanzadas
       doc.addPage()
-      doc.fontSize(16).font('Times-Roman').text('Bugs tipology by product', 60);
+      doc.fontSize(16).font('Helvetica').text('Bugs tipology by product', 60);
       await generate_advance_chart("Bugs tipology by product", jsonData.g_bug_typology_byComponent, 450, 250)
 
       //Avanzadas
       doc.moveDown(2)
-      doc.fontSize(16).font('Times-Roman').text('Bugs resolution by product', 60);
+      doc.fontSize(16).font('Helvetica').text('Bugs resolution by product', 60);
       await generate_advance_chart("Bugs resolution by product", jsonData.g_bug_pro_status, 450, 250)
 
       doc.addPage()
-      doc.fontSize(16).font('Times-Roman').text('Bug cause by Producto', 60);
+      doc.fontSize(16).font('Helvetica').text('Bug cause by Producto', 60);
       bg_char = ['#4837A9', '#A93745', '#A93785', '#3799A9', '#45A937', '#A6A937', '#434DC4']
       //ordered_graph_labels = ['Commons', 'Team_Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith', 'not_assigned'];
       ordered_graph_labels = ['nebulaSUITE', 'nebulaUSER', 'nebulaID', 'nebulaCERT', 'nebulaSIGN', 'not_defined'];
@@ -458,7 +471,7 @@ async function pdf_generator(jsonData, historic = true) {
         for (let counter in jsonData.counters) {
           let title = capitalizeWords(counter.replace('-_-', "#"));
           title = title.toLowerCase().replace(/ /g, "") == "qadeploymentcounter" ? "QA Deployment Counter" : title
-          doc.fontSize(16).font('Times-Roman').text(title, 60);
+          doc.fontSize(16).font('Helvetica').text(title, 60);
           await generate_basic_chart(title, jsonData.counters[counter], 450, 250, ['#434DC4'], false);
         }
       }
@@ -467,9 +480,9 @@ async function pdf_generator(jsonData, historic = true) {
     need_new_page = checkAddNewPage()
     //Comentarios
     if (!need_new_page) doc.addPage();
-    doc.fontSize(16).font('Times-Roman').text('Comments', 60);
+    doc.fontSize(16).font('Helvetica').text('Comments', 60);
     doc.moveDown(2)
-    doc.fontSize(13).font('Times-Roman').text(jsonData.comments)
+    doc.fontSize(13).font('Helvetica').text(jsonData.comments)
 
     doc.end();
 

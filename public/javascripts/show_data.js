@@ -1,5 +1,5 @@
 //const team_order = ['Commons', 'Team_Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith', 'PE', 'not_assigned'];
-const team_order = ['nebulaSUITE', 'nebulaUSER', 'nebulaID', 'nebulaCERT', 'nebulaSIGN', 'not_defined'];
+const team_order = ['nebulaSUITE', 'nebulaUSER', 'nebulaID', 'nebulaCERT', 'nebulaSIGN', 'not_defined', 'Commons', 'Team_Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith', 'PE', 'not_assigned'];
 
 function capitalizeWords(inputString) {
     return inputString
@@ -366,21 +366,38 @@ const manageInternalTask = (issues) => {
 
 const manageComponents = (issues) => {
     const header_order = ['key', 'summary', 'hash'];
-    console.log(issues)
     try {
         const content_main = document.createElement('div');
         content_main.classList.add("row");
         if (!issues || Object.keys(issues).length > 0) {
-            const table = createTable();
-            const row = document.createElement('div');
-            row.appendChild(table);
-            table.querySelector('thead').appendChild(create_table_header(header_order));
-            issues.forEach(element => {
-                table.querySelector('tbody').appendChild(create_table_row(element, header_order));
-            });
-
-            content_main.appendChild(row);
-
+            if (Array.isArray(issues)){
+                const table = createTable();
+                const row = document.createElement('div');
+                row.appendChild(table);
+                table.querySelector('thead').appendChild(create_table_header(header_order));
+                issues.forEach(element => {
+                    table.querySelector('tbody').appendChild(create_table_row(element, header_order));
+                });
+                content_main.appendChild(row);
+            }else{
+                for (let equipo in issues) {
+                    if (issues.hasOwnProperty(equipo)) {
+                        let teamRow = document.createElement('div');
+                        let teamTable = createTable();
+                        let titulo_equipo = document.createElement('h3');
+                        teamRow.classList.add("row");
+                        titulo_equipo.textContent = equipo;                        
+                        teamRow.appendChild(titulo_equipo);
+                        teamRow.appendChild(teamTable);
+                        teamTable.querySelector('thead').appendChild(create_table_header(header_order));
+                        issues[equipo].forEach(element => {
+                            let row_element = create_table_row(element, header_order);
+                            teamTable.querySelector('tbody').appendChild(row_element);
+                        });
+                        content_main.appendChild(teamRow);
+                    }
+                }
+            }
         }
         return content_main;
     } catch (error) {
@@ -390,20 +407,23 @@ const manageComponents = (issues) => {
 
 const manageReleaseNotes = (issues) => {
     const header_order = ['key', 'des'];
+    console.log(issues)
     try {
         const content_main = document.createElement('div');
         content_main.classList.add("row");
         // Recorrer las claves del objeto issues
-        for (const key in issues.issues) {
-            if (issues.issues.hasOwnProperty(key)) {
-                let array_issues = issues.issues[key];
-                let tabla = createTable();
-                let row = create_content_row(key.replace('___', ' '), tabla);
-                array_issues.forEach(item => {
-                    console.log(item);
-                    tabla.querySelector('tbody').appendChild(create_table_row(item, header_order));
-                    content_main.appendChild(row);
-                });
+        if (issues && Object.keys(issues).length > 0) {
+            for (const key in issues.issues) {
+                if (issues.issues.hasOwnProperty(key)) {
+                    let array_issues = issues.issues[key];
+                    let tabla = createTable();
+                    let row = create_content_row(key.replace('___', ' '), tabla);
+                    array_issues.forEach(item => {
+                        console.log(item);
+                        tabla.querySelector('tbody').appendChild(create_table_row(item, header_order));
+                        content_main.appendChild(row);
+                    });
+                }
             }
         }
 
