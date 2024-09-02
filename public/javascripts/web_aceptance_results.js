@@ -19,7 +19,10 @@ const loadData = async (opt, name) => {
         var card = null;
         card_stories.innerHTML = '';
         card_bugs.innerHTML = '';
+        card_qabugs.innerHTML = '';
         card_internal_tasks.innerHTML = '';
+        card_components.innerHTML = '';
+        card_release_notes.innerHTML = '';
         card_charts.innerHTML = '';
 
         // Stories

@@ -54,7 +54,7 @@ router.post('/generate_pdf', async (req, res) => {
   var response = await axios.get(ApiURL + `/storic/get/${id}`);
   var jsonData = response.data;
   //order = ['Commons', 'Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith']
-  order = ['nebulaSUITE', 'nebulaUSER', 'nebulaID', 'nebulaCERT', 'nebulaSIGN'];
+  order = ['nebulaSUITE', 'nebulaUSERS', 'nebulaID', 'nebulaCERT', 'nebulaSIGN', 'Otras tecnologias'];
   try {
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', 'attachment; filename= ' + jsonData.sprint + '.pdf');

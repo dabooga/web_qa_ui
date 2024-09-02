@@ -1,5 +1,5 @@
 //const team_order = ['Commons', 'Team_Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith', 'PE', 'not_assigned'];
-const team_order = ['nebulaSUITE', 'nebulaUSER', 'nebulaID', 'nebulaCERT', 'nebulaSIGN', 'not_defined', 'Commons', 'Team_Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith', 'PE', 'not_assigned'];
+const team_order = ['nebulaSUITE', 'nebulaUSERS', 'nebulaID', 'nebulaCERT', 'nebulaSIGN', 'not_defined', 'Commons', 'Team_Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith', 'PE', 'not_assigned', 'Otras tecnologias'];
 
 function capitalizeWords(inputString) {
     return inputString
@@ -407,7 +407,6 @@ const manageComponents = (issues) => {
 
 const manageReleaseNotes = (issues) => {
     const header_order = ['key', 'des'];
-    console.log(issues)
     try {
         const content_main = document.createElement('div');
         content_main.classList.add("row");
@@ -536,7 +535,7 @@ const manageCharts = (data) => {
 
         //Chart Bug cause by Producto
         //ordered_graph_labels = ['Commons', 'Team_Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith', 'not_assigned'];
-        ordered_graph_labels = ['nebulaSUITE', 'nebulaUSER', 'nebulaID', 'nebulaCERT', 'nebulaSIGN', 'not_defined'];
+        ordered_graph_labels = ['nebulaSUITE', 'nebulaUSERS', 'nebulaID', 'nebulaCERT', 'nebulaSIGN', 'not_defined', 'Otras tecnologias'];
         const chart_bug = createAdvanceChart(data.g_bug_team_cause, "Bug cause by product", ordered_graph_labels, ['#4837A9', '#A93745', '#A93785', '#3799A9', '#45A937', '#A6A937', '#45a4c4']);
         content_main.appendChild(chart_bug);
 

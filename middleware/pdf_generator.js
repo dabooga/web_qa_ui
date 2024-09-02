@@ -36,63 +36,82 @@ async function generate_table(title, data = [], type = "") {
   }
 
   let order = ['key', 'summary', 'components', 'status'];
-  let size_columns = { //480
+  let size_columns = { 
     'key': { 'size': 60, 'align': 'left', 'headerAlign': 'center' },
     'summary': { 'size': 240, 'align': 'left', 'headerAlign': 'center' },
     'components': { 'size': 120, 'align': 'left', 'headerAlign': 'center' },
     'status': { 'size': 60, 'align': 'left', 'headerAlign': 'center' }
   };
 
-  if (type == 'bug') {
-    order = ['key', 'summary', 'components', 'status', 'notes'];
-    size_columns['components']['size'] -= 30;
-    size_columns['summary']['size'] -= 30;
-    size_columns['notes'] = { 'size': 60, 'align': 'left', 'headerAlign': "right" };
-  } else if (type == 'internal') {
-    order = ['key', 'type', 'summary', 'components', 'status', 'notes'];
-    size_columns['summary']['size'] -= 50;
-    size_columns['components']['size'] -= 50;
-    size_columns['type'] = { 'size': 40, 'align': 'left', 'headerAlign': 'center' };
-    size_columns['notes'] = { 'size': 60, 'align': 'left', 'headerAlign': "right" };
-  } else if (type == 'components') {
-    order = ['key', 'summary', 'hash'];
-    size_columns = {
-      'key': { 'size': 60, 'align': 'left', 'headerAlign': 'center' },
-      'summary': { 'size': 160, 'align': 'left', 'headerAlign': 'center' },
-      'hash': { 'size': 260, 'align': 'left', 'headerAlign': 'center' }
-    };
-  } else if (type == 'documents') {
-    order = ['user_guide', 'version', 'hash', 'status'];
-    size_columns = {
-      'user_guide': { 'size': 90, 'align': 'left', 'headerAlign': 'center' },
-      'version': { 'size': 130, 'align': 'left', 'headerAlign': 'center' },
-      'hash': { 'size': 200, 'align': 'left', 'headerAlign': 'center' },
-      'status': { 'size': 60, 'align': 'left', 'headerAlign': 'center' }
-    };
+  switch (type) {
+    case 'release_notes':
+      order = ['key', 'description'];
+      size_columns = {
+        'key': { 'size': 90, 'align': 'left', 'headerAlign': 'center' },
+        'description': { 'size': 390, 'align': 'left', 'headerAlign': 'center' }
+      };
+      // Remap 'des' to 'description' in data
+      data = data.map(item => {
+        if (item.hasOwnProperty('des')) {
+          return { ...item, description: item.des };
+        }
+        return item;
+      });
+      break;
+
+    // Otras configuraciones para los tipos
+    case 'bug':
+      order = ['key', 'summary', 'components', 'status', 'notes'];
+      size_columns['components']['size'] -= 30;
+      size_columns['summary']['size'] -= 30;
+      size_columns['notes'] = { 'size': 60, 'align': 'left', 'headerAlign': "right" };
+      break;
+    case 'internal':
+      order = ['key', 'type', 'summary', 'components', 'status', 'notes'];
+      size_columns['summary']['size'] -= 50;
+      size_columns['components']['size'] -= 50;
+      size_columns['type'] = { 'size': 40, 'align': 'left', 'headerAlign': 'center' };
+      size_columns['notes'] = { 'size': 60, 'align': 'left', 'headerAlign': "right" };
+      break;
+    case 'components':
+      order = ['key', 'summary', 'hash'];
+      size_columns = {
+        'key': { 'size': 60, 'align': 'left', 'headerAlign': 'center' },
+        'summary': { 'size': 160, 'align': 'left', 'headerAlign': 'center' },
+        'hash': { 'size': 260, 'align': 'left', 'headerAlign': 'center' }
+      };
+      break;
+    case 'documents':
+      order = ['user_guide', 'version', 'hash', 'status'];
+      size_columns = {
+        'user_guide': { 'size': 90, 'align': 'left', 'headerAlign': 'center' },
+        'version': { 'size': 130, 'align': 'left', 'headerAlign': 'center' },
+        'hash': { 'size': 200, 'align': 'left', 'headerAlign': 'center' },
+        'status': { 'size': 60, 'align': 'left', 'headerAlign': 'center' }
+      };
+      break;
   }
 
-  // Proceed only if data is an array
+  // Convert components array to string
   if (Array.isArray(data) && data.length > 0) {
-    data.sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key));
-
     if (type !== 'components') {
       data = data.map(item => {
-        let componentsAsString = item.components;
-        if (Array.isArray(item.components)) {
-          componentsAsString = item.components.join(', ');
-        }
-        return { ...item, components: componentsAsString };
+        return {
+          ...item,
+          components: Array.isArray(item.components) ? item.components.join(', ') : item.components
+        };
       });
     }
   }
 
+  // Generar headers
   let headers = [];
-  for (const h of order) {
+  for (let h of order) {
     let column = {
       label: capitalizeWords(h.toUpperCase()),
-      headerAlign: size_columns[h]['headerAlign'],
+      headerAlign: size_columns[h]?.headerAlign || 'center',
       property: h,
-      width: size_columns[h]['size']
+      width: size_columns[h]?.size || 100
     };
     headers.push(column);
   }
@@ -111,7 +130,7 @@ async function generate_table(title, data = [], type = "") {
     };
 
     data.forEach(element => {
-      const status = element.hasOwnProperty('status') ? element.status.toLowerCase() : "";
+      const status = element.status?.toLowerCase() || "";
       if (rojo.includes(status)) {
         o_values.rojo.push(element);
       } else if (verde.includes(status)) {
@@ -134,29 +153,31 @@ async function generate_table(title, data = [], type = "") {
       width: doc.page.width - 70,
       prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => {
         rectRow.width = 480;
-        if (indexRow % 2 == 0) {
+        if (indexRow % 2 === 0) {
           doc.addBackground(rectRow, '#bfbfbf');
         }
 
-        if (indexColumn == order.indexOf('status')) {
-          const row_status = row.status.toLowerCase();
+        if (indexColumn === order.indexOf('status')) {
+          const row_status = row.status?.toLowerCase();
           if (rojo.includes(row_status)) {
-            doc.addBackground(rectCell, "#ff0d00"); //rojo
+            doc.addBackground(rectCell, "#ff0d00"); // rojo
           } else if (verde.includes(row_status)) {
-            doc.addBackground(rectCell, "#1affa3"); //verde
+            doc.addBackground(rectCell, "#1affa3"); // verde
           } else if (azul.includes(row_status)) {
-            doc.addBackground(rectCell, "#1a79ff"); //azul
+            doc.addBackground(rectCell, "#1a79ff"); // azul
           }
         }
       },
     });
 
   } catch (e) {
-    console.error("Generating Table");
-    console.error(table);
-    console.error(e);
+    console.error("Error generating table:", e);
+    console.error("Table data:", table);
+    throw e;
   }
 }
+
+
 
 
 async function generate_basic_chart(title, data, width, height, backgroundColor = ['#434DC4']) {
@@ -325,10 +346,8 @@ async function pdf_generator(jsonData, historic = true) {
     doc = null;
     doc = new PDFDocument({ size: 'A4' });
 
-    console.log(jsonData)
-
     //const team_order = ['Commons', 'Team_Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith', 'PE'];
-    const team_order = ['nebulaSUITE', 'nebulaUSER', 'nebulaID', 'nebulaCERT', 'nebulaSIGN', 'not_defined', 'Commons', 'Team_Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith', 'PE'];
+    const team_order = ['nebulaSUITE', 'nebulaUSERS', 'nebulaID', 'nebulaCERT', 'nebulaSIGN', 'not_defined', 'Commons', 'Team_Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith', 'PE', 'Otras tecnologias'];
 
     doc.fontSize(16).font('Helvetica').text(jsonData.sprint, { align: 'center' });
     doc.moveDown(2)
@@ -392,48 +411,6 @@ async function pdf_generator(jsonData, historic = true) {
       }
     }
 
-    //Components review
-    if (need_new_page) doc.addPage();
-    doc.fontSize(16).font('Helvetica').text('Components review', 40);
-    doc.moveDown();
-    if (Array.isArray(data_to_pdf.components)) {
-      await generate_table("", data_to_pdf.components, 'components')
-      need_new_page = checkAddNewPage()
-    } else {
-      for (let equipo in data_to_pdf.components) {
-        if (data_to_pdf.components.hasOwnProperty(equipo)) {
-          doc.fontSize(14).font('Helvetica-BoldOblique').text(equipo, 40);
-          doc.moveDown(1);
-          await generate_table("", data_to_pdf.components[equipo], 'components')
-          need_new_page = checkAddNewPage()
-        }
-      }
-    }
-    /*
-    try {
-      //Documentation
-      if (need_new_page) doc.addPage();
-      doc.fontSize(16).font('Helvetica').text('Documents review', 40);
-      doc.moveDown();
-
-      for (let item of team_order) {
-        if (Object.keys(data_to_pdf.documentation).includes(item)) {
-          var documents = []
-          if (data_to_pdf.documentation[item].length !== 0) {
-            Object.keys(data_to_pdf.documentation[item][0]['documentation']).forEach(itemKey => {
-              data_to_pdf.documentation[item][0]['documentation'][itemKey]['status'] = data_to_pdf.documentation[item][0]['status']
-              documents.push(data_to_pdf.documentation[item][0]['documentation'][itemKey])
-            });
-            await generate_table(item, documents, 'documents')
-            need_new_page = checkAddNewPage()
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error generating Documentation block");
-      doc.moveDown();
-    }
-    */
     //Charts
     //if (historic) {
     if (true) {
@@ -462,25 +439,83 @@ async function pdf_generator(jsonData, historic = true) {
       doc.fontSize(16).font('Helvetica').text('Bug cause by Producto', 60);
       bg_char = ['#4837A9', '#A93745', '#A93785', '#3799A9', '#45A937', '#A6A937', '#434DC4']
       //ordered_graph_labels = ['Commons', 'Team_Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith', 'not_assigned'];
-      ordered_graph_labels = ['nebulaSUITE', 'nebulaUSER', 'nebulaID', 'nebulaCERT', 'nebulaSIGN', 'not_defined'];
+      ordered_graph_labels = ['nebulaSUITE', 'nebulaUSERS', 'nebulaID', 'nebulaCERT', 'nebulaSIGN', 'not_defined', 'Otras tecnologias'];
       await generate_advance_chart("Bug cause by Producto", jsonData.g_bug_team_cause, 450, 250, ordered_graph_labels, bg_char)
 
       //Counters
+      /*
       if ("counters" in jsonData) {
-        doc.addPage();
         for (let counter in jsonData.counters) {
           let title = capitalizeWords(counter.replace('-_-', "#"));
           title = title.toLowerCase().replace(/ /g, "") == "qadeploymentcounter" ? "QA Deployment Counter" : title
           doc.fontSize(16).font('Helvetica').text(title, 60);
           await generate_basic_chart(title, jsonData.counters[counter], 450, 250, ['#434DC4'], false);
         }
+      }*/
+    }
+
+    //Components review
+    if (need_new_page) doc.addPage();
+    doc.fontSize(16).font('Helvetica').text('Components review', 40);
+    doc.moveDown();
+    if (Array.isArray(data_to_pdf.components)) {
+      await generate_table("", data_to_pdf.components, 'components')
+      need_new_page = checkAddNewPage()
+    } else {
+      for (let equipo in data_to_pdf.components) {
+        if (data_to_pdf.components.hasOwnProperty(equipo)) {
+          doc.fontSize(14).font('Helvetica-BoldOblique').text(equipo, 40);
+          doc.moveDown(1);
+          await generate_table("", data_to_pdf.components[equipo], 'components')
+          need_new_page = checkAddNewPage()
+        }
       }
     }
 
+    //Releases review
+    if (Object.keys(data_to_pdf).includes('release_notes')) {
+      if (need_new_page) doc.addPage();
+      doc.fontSize(16).font('Helvetica').text(data_to_pdf.release_notes.name, 40);
+      doc.moveDown();
+      for (let item of Object.keys(data_to_pdf.release_notes.issues)) {
+        if (data_to_pdf.release_notes.issues[item].length !== 0) {
+          await generate_table(item, data_to_pdf.release_notes.issues[item], "release_notes")
+          need_new_page = checkAddNewPage()
+        }
+      }
+    }
+
+
+    /*
+    try {
+      //Documentation
+      if (need_new_page) doc.addPage();
+      doc.fontSize(16).font('Helvetica').text('Documents review', 40);
+      doc.moveDown();
+
+      for (let item of team_order) {
+        if (Object.keys(data_to_pdf.documentation).includes(item)) {
+          var documents = []
+          if (data_to_pdf.documentation[item].length !== 0) {
+            Object.keys(data_to_pdf.documentation[item][0]['documentation']).forEach(itemKey => {
+              data_to_pdf.documentation[item][0]['documentation'][itemKey]['status'] = data_to_pdf.documentation[item][0]['status']
+              documents.push(data_to_pdf.documentation[item][0]['documentation'][itemKey])
+            });
+            await generate_table(item, documents, 'documents')
+            need_new_page = checkAddNewPage()
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error generating Documentation block");
+      doc.moveDown();
+    }
+    */
     need_new_page = checkAddNewPage()
+
     //Comentarios
-    if (!need_new_page) doc.addPage();
-    doc.fontSize(16).font('Helvetica').text('Comments', 60);
+    if (need_new_page) doc.addPage();
+    doc.fontSize(16).font('Helvetica').text('Comments', 40);
     doc.moveDown(2)
     doc.fontSize(13).font('Helvetica').text(jsonData.comments)
 
