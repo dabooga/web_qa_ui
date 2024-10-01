@@ -5,7 +5,10 @@ const loadData = async (opt, name) => {
         const card_internal_tasks = document.getElementById('internal-task-content');
         const card_charts = document.getElementById('charts-content');
         const card_components = document.getElementById('components-content');
+        const card_release_notes = document.getElementById('release-note-content');
+        const boton_panel_release_note = document.getElementById('boton-panel-release-note');
         const card_documents = document.getElementById('documents-review-content');
+        const card_qabugs = document.getElementById('qabugs-content');
         const card_comments = document.getElementById('comments-content');
         const modal_title = document.getElementById('modal-title');
 
@@ -15,8 +18,11 @@ const loadData = async (opt, name) => {
         var card = null;
         card_stories.innerHTML = '';
         card_bugs.innerHTML = '';
-        card_charts.innerHTML = '';
+        card_qabugs.innerHTML = '';
         card_internal_tasks.innerHTML = '';
+        card_components.innerHTML = '';
+        card_release_notes.innerHTML = '';
+        card_charts.innerHTML = '';
 
         // Stories
         card = manageStories(data.qa_sprint_story.story);
@@ -26,6 +32,10 @@ const loadData = async (opt, name) => {
         card = manageBugs(data.qa_sprint_story.bugs);
         card_bugs.appendChild(card);
 
+        // QA Bugs
+        card = manageBugs(data.qa_sprint_story.bugs_qa);
+        card_qabugs.appendChild(card);
+
         //Internal Tasks
         card = manageInternalTask(data.qa_sprint_story.internal_tasks);
         card_internal_tasks.appendChild(card);
@@ -34,9 +44,14 @@ const loadData = async (opt, name) => {
         card = manageComponents(data.qa_sprint_story.components);
         card_components.appendChild(card);
 
+        //Release Notes
+        card = manageReleaseNotes(data.qa_acceptance_results.release_notes);
+        //boton_panel_release_note.textContent = data.qa_acceptance_results.release_notes.name;
+        card_release_notes.appendChild(card);
+
         //Documentation
-        card = manageDocumentation(data.qa_sprint_story.documentation);
-        card_documents.appendChild(card);
+        //card = manageDocumentation(data.qa_sprint_story.documentation);
+        //card_documents.appendChild(card);
 
         // Charts
         card = manageCharts(data);

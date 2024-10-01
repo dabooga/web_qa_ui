@@ -1,4 +1,5 @@
-const team_order = ['Commons', 'Team_Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith', 'PE', 'not_assigned'];
+//const team_order = ['Commons', 'Team_Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith', 'PE', 'not_assigned'];
+const team_order = ['nebulaSUITE', 'nebulaUSERS', 'nebulaID', 'nebulaCERT', 'nebulaSIGN', 'not_defined', 'Commons', 'Team_Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith', 'PE', 'not_assigned', 'Otras tecnologias'];
 
 function capitalizeWords(inputString) {
     return inputString
@@ -10,7 +11,7 @@ function capitalizeWords(inputString) {
 function apply_order(dataset) {
     let lines = Object({ 'verde': [], 'rojo': [], 'azul': [], 'resto': [] });
     rojo = ['story rejected', 'qa failed', 'qa rejected', 'prod rejected', 'discarded']
-    verde = ['qa verification success', 'done', 'qa verified', 'discarded', 'in production', 'deploy release pre']
+    verde = ['qa verification success', 'done', 'qa verified', 'discarded', 'regresion', 'to production', 'in production', 'bug resolved']
     azul = ['in progress', 'qa testing story', 'qa validation']
     dataset.forEach((element) => {
         if (rojo.includes(element.status.toLowerCase())) {
@@ -74,7 +75,7 @@ const create_table_row = (data, order, color = "") => {
             status.style.background = color;
             status.textContent = data[key];
             cell.appendChild(status);
-        } else if (key == "key") { 
+        } else if (key == "key") {
             const key_link = document.createElement('a');
             key_link.classList.add('link-primary', 'link-offset-2', 'link-underline-opacity-25', 'link-underline-opacity-100-hover');
             key_link.href = 'https://vintegris.atlassian.net/browse/' + data[key];
@@ -364,26 +365,63 @@ const manageInternalTask = (issues) => {
 };
 
 const manageComponents = (issues) => {
-    const header_order = ['key', 'summary', 'hash', 'status'];
+    const header_order = ['key', 'summary', 'hash'];
     try {
         const content_main = document.createElement('div');
         content_main.classList.add("row");
-
-        for (const team_key of team_order) {
-            if (Object.keys(issues).includes(team_key)) {
-                if (issues[team_key].length !== 0) {
-                    const table = createTable();
-                    const row = create_content_row(team_key, table);
-                    const order = apply_order(issues[team_key]);
-                    table.querySelector('thead').appendChild(create_table_header(header_order));
-                    for (const line_type of Object.keys(order)) {
-                        if (order.hasOwnProperty(line_type)) {
-                            order[line_type].forEach((element) => {
-                                table.querySelector('tbody').appendChild(create_table_row(element, header_order, line_type));
-                            });
-                        }
+        if (!issues || Object.keys(issues).length > 0) {
+            if (Array.isArray(issues)){
+                const table = createTable();
+                const row = document.createElement('div');
+                row.appendChild(table);
+                table.querySelector('thead').appendChild(create_table_header(header_order));
+                issues.forEach(element => {
+                    table.querySelector('tbody').appendChild(create_table_row(element, header_order));
+                });
+                content_main.appendChild(row);
+            }else{
+                for (let equipo in issues) {
+                    if (issues.hasOwnProperty(equipo)) {
+                        let teamRow = document.createElement('div');
+                        let teamTable = createTable();
+                        let titulo_equipo = document.createElement('h3');
+                        teamRow.classList.add("row");
+                        titulo_equipo.textContent = equipo;                        
+                        teamRow.appendChild(titulo_equipo);
+                        teamRow.appendChild(teamTable);
+                        teamTable.querySelector('thead').appendChild(create_table_header(header_order));
+                        issues[equipo].forEach(element => {
+                            let row_element = create_table_row(element, header_order);
+                            teamTable.querySelector('tbody').appendChild(row_element);
+                        });
+                        content_main.appendChild(teamRow);
                     }
-                    content_main.appendChild(row);
+                }
+            }
+        }
+        return content_main;
+    } catch (error) {
+        console.error('Error al cargar datos:', error);
+    }
+}
+
+const manageReleaseNotes = (issues) => {
+    const header_order = ['key', 'summary'];
+    try {
+        const content_main = document.createElement('div');
+        content_main.classList.add("row");
+        // Recorrer las claves del objeto issues
+        if (issues && Object.keys(issues).length > 0) {
+            for (const key in issues) {
+                if (issues.hasOwnProperty(key)) {
+                    let array_issues = issues[key];
+                    let tabla = createTable();
+                    let row = create_content_row(key.replace('___', ' '), tabla);
+                    array_issues.forEach(item => {
+                        console.log(item);
+                        tabla.querySelector('tbody').appendChild(create_table_row(item, header_order));
+                        content_main.appendChild(row);
+                    });
                 }
             }
         }
@@ -397,7 +435,7 @@ const manageComponents = (issues) => {
 const manageDocumentation = (issues) => {
     const header_order = ['user_guide', 'version', 'hash', 'status'];
     rojo = ['story rejected', 'qa failed', 'qa rejected', 'prod rejected', 'discarded']
-    verde = ['qa verification success', 'done', 'qa verified', 'discarded', 'in production', 'deploy release pre']
+    verde = ['qa verification success', 'done', 'qa verified', 'discarded', 'regresion', 'to production', 'in production', 'bug resolved']
     azul = ['in progress', 'qa testing story', 'qa validation']
     if (issues.length == 0) return null;
 
@@ -444,6 +482,10 @@ const manageBugs = (bugs) => {
         const content_main = document.createElement('div');
         content_main.classList.add("row");
 
+        if (!bugs || Object.keys(bugs).length === 0) {
+            return content_main;
+        }
+
         for (const team_key of team_order) {
             if (Object.keys(bugs).includes(team_key)) {
                 if (bugs[team_key].length !== 0) {
@@ -480,20 +522,21 @@ const manageCharts = (data) => {
         content_main.appendChild(card_bug_type);
 
         // Chart Bug project
-        const card_bug_project = createBasicChart(data.g_bug_project, "Bugs by component", "Bugs", ['#434DC4']);
+        const card_bug_project = createBasicChart(data.g_bug_project, "Bugs by product", "Bugs", ['#434DC4']);
         content_main.appendChild(card_bug_project);
 
         //Bugs tipology by component
-        const chart_bug_typologie = createAdvanceChart(data.g_bug_typology_byComponent, "Bugs tipology by component", [], ['#434DC4', '#6973E8']);
+        const chart_bug_typologie = createAdvanceChart(data.g_bug_typology_byComponent, "Bugs tipology by product", [], ['#434DC4', '#6973E8', '#A6A937', '#3fa937']);
         content_main.appendChild(chart_bug_typologie);
 
         //Chart Bugs resolution by component
-        const chart_bug_res_by_comp = createAdvanceChart(data.g_bug_pro_status, "Bugs resolution by component", [], ['#434DC4', '#6973E8']);
+        const chart_bug_res_by_comp = createAdvanceChart(data.g_bug_pro_status, "Bugs resolution by product", [], ['#434DC4', '#6973E8']);
         content_main.appendChild(chart_bug_res_by_comp);
 
-        //Chart Bug cause by FactoryTeam
-        ordered_graph_labels = ['Commons', 'Team_Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith', 'not_assigned'];
-        const chart_bug = createAdvanceChart(data.g_bug_team_cause, "Bug cause by FactoryTeam", ordered_graph_labels, ['#4837A9', '#A93745', '#A93785', '#3799A9', '#45A937', '#A6A937', '#45a4c4']);
+        //Chart Bug cause by Producto
+        //ordered_graph_labels = ['Commons', 'Team_Rocket', 'Nakama', 'Sputnik', 'Heyday', 'Smith', 'not_assigned'];
+        ordered_graph_labels = ['nebulaSUITE', 'nebulaUSERS', 'nebulaID', 'nebulaCERT', 'nebulaSIGN', 'not_defined', 'Otras tecnologias'];
+        const chart_bug = createAdvanceChart(data.g_bug_team_cause, "Bug cause by product", ordered_graph_labels, ['#4837A9', '#A93745', '#A93785', '#3799A9', '#45A937', '#A6A937', '#45a4c4']);
         content_main.appendChild(chart_bug);
 
         //Counters

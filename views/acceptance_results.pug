@@ -78,7 +78,6 @@ block content
                   .accordion-collapse.collapse(aria-labelledby="header-bugs")#panel-bugs
                     .accordion-body
                       .container-fluid#bugs-content
-
             .row
               .accordion
                 .accordion-item
@@ -90,20 +89,11 @@ block content
             .row
               .accordion
                 .accordion-item
-                  h2.accordion-header#header-components
-                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#panel-components" aria-expanded="false" aria-controls="panel-components") Components review
-                  .accordion-collapse.collapse(aria-labelledby="header-components")#panel-components
+                  h2.accordion-header#header-qabugs
+                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#panel-qabugs" aria-expanded="false" aria-controls="panel-qabugs") QA reported bugs
+                  .accordion-collapse.collapse(aria-labelledby="header-qabugs")#panel-qabugs
                     .accordion-body
-                      .container-fluid#components-content
-
-            .row
-              .accordion
-                .accordion-item
-                  h2.accordion-header#header-documents-review
-                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#panel-documents-review" aria-expanded="false" aria-controls="panel-documents-review") Documents review
-                  .accordion-collapse.collapse(aria-labelledby="header-documents-review")#panel-documents-review
-                    .accordion-body
-                      .container-fluid#documents-review-content
+                      .container-fluid#qabugs-content
 
             .row
               .accordion
@@ -113,6 +103,33 @@ block content
                   .accordion-collapse.collapse(aria-labelledby="header-charts")#panel-charts
                     .accordion-body
                       .container-fluid#charts-content
+
+            .row
+              .accordion
+                .accordion-item
+                  h2.accordion-header#header-components
+                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#panel-components" aria-expanded="false" aria-controls="panel-components") Components review
+                  .accordion-collapse.collapse(aria-labelledby="header-components")#panel-components
+                    .accordion-body
+                      .container-fluid#components-content
+            
+            .row
+              .accordion
+                .accordion-item
+                  h2.accordion-header#header-components
+                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#panel-release-note" aria-expanded="false" aria-controls="panel-release-note")#boton-panel-release-note Releases
+                  .accordion-collapse.collapse(aria-labelledby="header-components")#panel-release-note
+                    .accordion-body
+                      .container-fluid#release-note-content
+
+            //.row
+              .accordion
+                .accordion-item
+                  h2.accordion-header#header-documents-review
+                    button.accordion-button(type="button" data-bs-toggle="collapse" data-bs-target="#panel-documents-review" aria-expanded="false" aria-controls="panel-documents-review") Documents review
+                  .accordion-collapse.collapse(aria-labelledby="header-documents-review")#panel-documents-review
+                    .accordion-body
+                      .container-fluid#documents-review-content
 
             .row
               .accordion
