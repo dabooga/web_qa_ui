@@ -406,15 +406,15 @@ const manageComponents = (issues) => {
 }
 
 const manageReleaseNotes = (issues) => {
-    const header_order = ['key', 'des'];
+    const header_order = ['key', 'summary'];
     try {
         const content_main = document.createElement('div');
         content_main.classList.add("row");
         // Recorrer las claves del objeto issues
         if (issues && Object.keys(issues).length > 0) {
-            for (const key in issues.issues) {
-                if (issues.issues.hasOwnProperty(key)) {
-                    let array_issues = issues.issues[key];
+            for (const key in issues) {
+                if (issues.hasOwnProperty(key)) {
+                    let array_issues = issues[key];
                     let tabla = createTable();
                     let row = create_content_row(key.replace('___', ' '), tabla);
                     array_issues.forEach(item => {
