@@ -365,7 +365,7 @@ const manageInternalTask = (issues) => {
 };
 
 const manageComponents = (issues) => {
-    const header_order = ['key', 'summary', 'hash'];
+    const header_order = ['key', 'summary', 'hash', 'status'];
     try {
         const content_main = document.createElement('div');
         content_main.classList.add("row");
@@ -375,9 +375,17 @@ const manageComponents = (issues) => {
                 const row = document.createElement('div');
                 row.appendChild(table);
                 table.querySelector('thead').appendChild(create_table_header(header_order));
-                issues.forEach(element => {
+                /*issues.forEach(element => {
                     table.querySelector('tbody').appendChild(create_table_row(element, header_order));
-                });
+                });*/
+                const order = apply_order(issues);
+                for (const line_type of Object.keys(order)) {
+                    if (order.hasOwnProperty(line_type)) {
+                        order[line_type].forEach((element) => {
+                            table.querySelector('tbody').appendChild(create_table_row(element, header_order, line_type));
+                        });
+                    }
+                }
                 content_main.appendChild(row);
             }else{
                 for (let equipo in issues) {

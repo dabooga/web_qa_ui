@@ -27,7 +27,7 @@ function capitalizeWords(inputString) {
 }
 
 async function generate_table(title, data = [], type = "") {
-  title = title !== "" ? capitalizeWords(title) : "";
+  title = title !== "" ? capitalizeWords(title.replace("__", " ")) : "";
 
   // Ensure data is an array
   if (!Array.isArray(data)) {
@@ -45,18 +45,18 @@ async function generate_table(title, data = [], type = "") {
 
   switch (type) {
     case 'release_notes':
-      order = ['key', 'description'];
+      order = ['key', 'summary'];
       size_columns = {
         'key': { 'size': 90, 'align': 'left', 'headerAlign': 'center' },
-        'description': { 'size': 390, 'align': 'left', 'headerAlign': 'center' }
+        'summary': { 'size': 390, 'align': 'left', 'headerAlign': 'center' }
       };
       // Remap 'des' to 'description' in data
-      data = data.map(item => {
+      /*data = data.map(item => {
         if (item.hasOwnProperty('des')) {
           return { ...item, description: item.des };
         }
         return item;
-      });
+      });*/
       break;
 
     // Otras configuraciones para los tipos
@@ -74,11 +74,12 @@ async function generate_table(title, data = [], type = "") {
       size_columns['notes'] = { 'size': 60, 'align': 'left', 'headerAlign': "right" };
       break;
     case 'components':
-      order = ['key', 'summary', 'hash'];
+      order = ['key', 'summary', 'hash', 'status'];
       size_columns = {
         'key': { 'size': 60, 'align': 'left', 'headerAlign': 'center' },
-        'summary': { 'size': 160, 'align': 'left', 'headerAlign': 'center' },
-        'hash': { 'size': 260, 'align': 'left', 'headerAlign': 'center' }
+        'summary': { 'size': 130, 'align': 'left', 'headerAlign': 'center' },
+        'hash': { 'size': 230, 'align': 'left', 'headerAlign': 'center' },
+        'status': { 'size': 60, 'align': 'left', 'headerAlign': 'center' }
       };
       break;
     case 'documents':
@@ -477,9 +478,10 @@ async function pdf_generator(jsonData, historic = true) {
       if (need_new_page) doc.addPage();
       doc.fontSize(16).font('Helvetica').text(data_to_pdf.release_notes.name, 40);
       doc.moveDown();
-      for (let item of Object.keys(data_to_pdf.release_notes.issues)) {
-        if (data_to_pdf.release_notes.issues[item].length !== 0) {
-          await generate_table(item, data_to_pdf.release_notes.issues[item], "release_notes")
+      console.log(data_to_pdf.release_notes);
+      for (let item of Object.keys(data_to_pdf.release_notes)) {
+        if (data_to_pdf.release_notes[item].length !== 0) {
+          await generate_table(item, data_to_pdf.release_notes[item], "release_notes")
           need_new_page = checkAddNewPage()
         }
       }
